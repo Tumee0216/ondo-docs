@@ -16,6 +16,7 @@ import {
   Loader2
 } from "lucide-react"
 import Link from "next/link"
+import { toast } from "sonner"
 
 interface Project {
   id: string
@@ -54,7 +55,7 @@ export default function ProjectsPage() {
       if (result.success) {
         setProjects(result.data)
       } else {
-        console.error("Failed to fetch projects:", result.error)
+        toast.error("Failed to fetch projects:", result.error)
       }
     } catch (error) {
       console.error("Error fetching projects:", error)
@@ -80,7 +81,7 @@ export default function ProjectsPage() {
       if (result.success) {
         setProjects(projects.filter(p => p.id !== project.id))
       } else {
-        console.error("Failed to delete project:", result.error)
+        toast.error("Failed to delete project:", result.error)
         alert("Failed to delete project. Please try again.")
       }
     } catch (error) {

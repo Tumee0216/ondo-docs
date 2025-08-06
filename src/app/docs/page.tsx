@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Search, BookOpen, Download, Share2, ArrowLeft, Menu, X, Code, FileText, Zap } from "lucide-react"
 import Link from "next/link"
-import { MarkdownRenderer } from "@/components/markdown-renderer"
 import { TableOfContents } from "@/components/table-of-contents"
+import { MarkdownContent } from "@/components/markdown-renderer"
 
 interface ProjectData {
   name: string
@@ -214,7 +214,7 @@ export default function DocsPage() {
 
             {/* Rendered Content */}
             <div className="prose prose-lg max-w-none">
-              <MarkdownRenderer content={projectData.content} />
+              <MarkdownContent content={projectData.content} />
             </div>
 
             {/* Footer */}
