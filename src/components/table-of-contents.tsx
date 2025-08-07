@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ChevronRight, ChevronDown } from "lucide-react"
+import { toast } from "sonner"
 
 interface Section {
   id: string
@@ -24,25 +25,24 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ sections, activeSection, onSectionClick, compact = false }: TableOfContentsProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
-
   // Debug logging (only in development)
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.log("TableOfContents sections:", sections)
-      console.log("Active section:", activeSection)
+      toast.info(`TableOfContents sections: ${sections}`)
+      toast.info(`Active section: ${activeSection}`)
     }
   }, [sections, activeSection])
 
   const handleSectionClick = (anchor: string) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log("Clicking section:", anchor)
+      toast.info(`Clicking section: ${anchor}`)
     }
     const element = document.getElementById(anchor)
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" })
     } else {
       if (process.env.NODE_ENV === 'development') {
-        console.warn("Element not found for anchor:", anchor)
+        toast.warning(`Element not found for anchor: ${anchor}`)
       }
     }
     onSectionClick?.(anchor)

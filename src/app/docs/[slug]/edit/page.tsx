@@ -20,10 +20,11 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { MarkdownRenderer } from "@/components/markdown-renderer"
 import { useUnsavedChanges } from "@/hooks/use-unsaved-changes"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 import { KeyboardShortcutsHelp } from "@/components/keyboard-shortcuts-help"
+import { toast } from "sonner"
+import { MarkdownContent } from "@/components/markdown-renderer"
 
 interface Project {
   id: string
@@ -75,7 +76,7 @@ export default function EditPage() {
           content: result.data.content
         })
       } else {
-        console.error("Project not found")
+        toast.error("Project not found")
         router.push("/")
       }
     } catch (error) {
@@ -156,7 +157,7 @@ export default function EditPage() {
         setTimeout(() => setSaveStatus("idle"), 3000)
       } else {
         setSaveStatus("error")
-        console.error("Failed to save:", result.error)
+        toast.error("Failed to save:", result.error)
       }
     } catch (error) {
       setSaveStatus("error")
@@ -402,7 +403,7 @@ export default function EditPage() {
               </div>
               
               <div className="prose prose-lg max-w-none">
-                <MarkdownRenderer content={formData.content} />
+                <MarkdownContent content={formData.content} />
               </div>
             </div>
           </div>

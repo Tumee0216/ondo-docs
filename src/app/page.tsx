@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { FileText, Zap, Globe, Code, BookOpen, ArrowRight, Trash2, Edit, Gitlab } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 interface Project {
   id: string
@@ -98,7 +99,7 @@ export default function HomePage() {
       if (result.success) {
         router.push(`/docs/${result.data.slug}`)
       } else {
-        console.error("Error creating project:", result.error)
+        toast.error("Error creating project:", result.error)
         alert("Error creating project: " + result.error)
       }
     } catch (error) {
