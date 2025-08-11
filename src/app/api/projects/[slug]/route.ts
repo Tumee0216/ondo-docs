@@ -30,7 +30,7 @@ export async function PUT(
 ) {
   const { slug } = await params
   try {
-    const { name, content, description } = await request.json()
+    const { name, content, description, category  } = await request.json()
 
     // Validate required fields
     if (!name || !content) {
@@ -61,8 +61,9 @@ export async function PUT(
       name: name.trim(),
       content: content.trim(),
       description: description?.trim() || null,
-    })
-
+      category: category?.trim() || "general11", 
+    });
+    
     return NextResponse.json({
       success: true,
       data: project,
