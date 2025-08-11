@@ -5,6 +5,7 @@ export interface CreateProjectData {
   name: string
   content: string
   description?: string
+  category:string 
 }
 
 export interface ProjectWithSections {

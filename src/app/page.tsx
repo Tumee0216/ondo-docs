@@ -1,85 +1,103 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { FileText, Zap, Globe, Code, BookOpen, ArrowRight, Trash2, Edit, Gitlab } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import {
+  FileText,
+  Zap,
+  Globe,
+  Code,
+  BookOpen,
+  ArrowRight,
+  Trash2,
+  Edit,
+  Gitlab,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Project {
-  id: string
-  name: string
-  slug: string
-  description: string | null
-  createdAt: string
-  updatedAt: string
-  wordCount: number
-  readTime: number
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+  category: string;
+  wordCount: number;
+  readTime: number;
   sections: Array<{
-    id: string
-    title: string
-    level: number
-    anchor: string
-    order: number
-  }>
+    id: string;
+    title: string;
+    level: number;
+    anchor: string;
+    order: number;
+  }>;
 }
 
 export default function HomePage() {
-  const [readmeContent, setReadmeContent] = useState("")
-  const [projectName, setProjectName] = useState("")
-  const [projectDescription, setProjectDescription] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [projects, setProjects] = useState<Project[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
+  const [category, setCategory] = useState("");
+  const [readmeContent, setReadmeContent] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    fetchProjects()
-  }, [])
+    fetchProjects();
+  }, []);
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("/api/projects")
-      const result = await response.json()
+      const response = await fetch("/api/projects");
+      const result = await response.json();
       if (result.success) {
-        setProjects(result.data)
+        setProjects(result.data);
       }
     } catch (error) {
-      console.error("Error fetching projects:", error)
+      console.error("Error fetching projects:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file && file.name.toLowerCase().includes("readme")) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        const content = e.target?.result as string
-        setReadmeContent(content)
+        const content = e.target?.result as string;
+        setReadmeContent(content);
         // Extract project name from README title
-        const titleMatch = content.match(/^#\s+(.+)/m)
+        const titleMatch = content.match(/^#\s+(.+)/m);
         if (titleMatch) {
-          setProjectName(titleMatch[1])
+          setProjectName(titleMatch[1]);
         }
-      }
-      reader.readAsText(file)
+      };
+      reader.readAsText(file);
     }
-  }
+  };
 
   const handleGenerateDocumentation = async () => {
-    if (!readmeContent || !projectName) return
+    if (!readmeContent || !projectName) return;
 
-    setIsGenerating(true)
+    setIsGenerating(true);
 
     try {
       const response = await fetch("/api/projects", {
@@ -91,40 +109,41 @@ export default function HomePage() {
           name: projectName,
           content: readmeContent,
           description: projectDescription,
+          category: category,
         }),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        router.push(`/docs/${result.data.slug}`)
+        router.push(`/docs/${result.data.slug}`);
       } else {
-        toast.error("Error creating project:", result.error)
-        alert("Error creating project: " + result.error)
+        toast.error("Error creating project:", result.error);
+        alert("Error creating project: " + result.error);
       }
     } catch (error) {
-      console.error("Error creating project:", error)
-      alert("Error creating project. Please try again.")
+      console.error("Error creating project:", error);
+      alert("Error creating project. Please try again.");
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   const handleDeleteProject = async (slug: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return
+    if (!confirm("Are you sure you want to delete this project?")) return;
 
     try {
       const response = await fetch(`/api/projects/${slug}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
-        setProjects(projects.filter((p) => p.slug !== slug))
+        setProjects(projects.filter((p) => p.slug !== slug));
       }
     } catch (error) {
-      console.error("Error deleting project:", error)
+      console.error("Error deleting project:", error);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -133,10 +152,18 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src="/images/ondo-logo.png" alt="ONDO Logo" className="h-8" />
+              <img
+                src="/images/ondo-logo.png"
+                alt="ONDO Logo"
+                className="h-8"
+              />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Documentation Hub</h1>
-                <p className="text-sm text-gray-600">Automated documentation generation</p>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Documentation Hub
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Automated documentation generation
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -171,8 +198,9 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Automatically generate professional, searchable documentation websites from your README files. Perfect for
-              development teams who want beautiful docs without the hassle.
+              Automatically generate professional, searchable documentation
+              websites from your README files. Perfect for development teams who
+              want beautiful docs without the hassle.
             </p>
             <div className="flex justify-center space-x-4">
               <Button size="lg" className="bg-black hover:bg-gray-800">
@@ -192,9 +220,12 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Our Documentation Hub?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Why Choose Our Documentation Hub?
+            </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Built specifically for development teams who need professional documentation fast
+              Built specifically for development teams who need professional
+              documentation fast
             </p>
           </div>
 
@@ -206,7 +237,8 @@ export default function HomePage() {
                 </div>
                 <CardTitle>Instant Generation</CardTitle>
                 <CardDescription>
-                  Upload your README and get a complete documentation website in seconds
+                  Upload your README and get a complete documentation website in
+                  seconds
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -217,7 +249,10 @@ export default function HomePage() {
                   <Code className="w-6 h-6 text-blue-600" />
                 </div>
                 <CardTitle>Code Highlighting</CardTitle>
-                <CardDescription>Automatic syntax highlighting for all major programming languages</CardDescription>
+                <CardDescription>
+                  Automatic syntax highlighting for all major programming
+                  languages
+                </CardDescription>
               </CardHeader>
             </Card>
 
@@ -228,7 +263,8 @@ export default function HomePage() {
                 </div>
                 <CardTitle>Responsive Design</CardTitle>
                 <CardDescription>
-                  Mobile-first design that looks perfect on all devices and screen sizes
+                  Mobile-first design that looks perfect on all devices and
+                  screen sizes
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -241,8 +277,13 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Generate Your Documentation</h2>
-              <p className="text-gray-600">Upload your README file or paste the content directly to get started</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Generate Your Documentation
+              </h2>
+              <p className="text-gray-600">
+                Upload your README file or paste the content directly to get
+                started
+              </p>
             </div>
 
             <Card className="shadow-xl border-0">
@@ -252,7 +293,8 @@ export default function HomePage() {
                   README to Documentation
                 </CardTitle>
                 <CardDescription>
-                  Transform your project README into a professional documentation website
+                  Transform your project README into a professional
+                  documentation website
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -269,7 +311,9 @@ export default function HomePage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="project-description">Description (Optional)</Label>
+                      <Label htmlFor="project-description">
+                        Description (Optional)
+                      </Label>
                       <Input
                         id="project-description"
                         placeholder="Brief description of your project"
@@ -290,10 +334,27 @@ export default function HomePage() {
                         />
                       </div>
                     </div>
+
+                    <div>
+                      <Label htmlFor="category">Category</Label>
+                      <select
+                        id="category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-full mt-2 p-2 border rounded-md"
+                      >
+                        <option value="">Select category</option>
+                        <option value="api">API</option>
+                        <option value="tool">Tool</option>
+                      </select>
+                    </div>
+                    {/* end  left side */}
                   </div>
 
                   <div className="space-y-4">
-                    <Label htmlFor="readme-content">Or Paste README Content</Label>
+                    <Label htmlFor="readme-content">
+                      Or Paste README Content
+                    </Label>
                     <Textarea
                       id="readme-content"
                       placeholder="Paste your README content here..."
@@ -335,8 +396,12 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Documentation Projects</h2>
-            <p className="text-gray-600">Manage and view your existing documentation</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Your Documentation Projects
+            </h2>
+            <p className="text-gray-600">
+              Manage and view your existing documentation
+            </p>
           </div>
 
           {isLoading ? (
@@ -347,16 +412,23 @@ export default function HomePage() {
           ) : projects.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No projects yet. Create your first documentation above!</p>
+              <p className="text-gray-600">
+                No projects yet. Create your first documentation above!
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
-                <Card key={project.id} className="hover:shadow-lg transition-shadow">
+                <Card
+                  key={project.id}
+                  className="hover:shadow-lg transition-shadow"
+                >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg truncate">{project.name}</CardTitle>
+                        <CardTitle className="text-lg truncate">
+                          {project.name}
+                        </CardTitle>
                         <CardDescription className="line-clamp-2">
                           {project.description || "No description provided"}
                         </CardDescription>
@@ -365,7 +437,9 @@ export default function HomePage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => router.push(`/docs/${project.slug}/edit`)}
+                          onClick={() =>
+                            router.push(`/docs/${project.slug}/edit`)
+                          }
                           className="h-8 w-8 p-0"
                         >
                           <Edit className="w-3 h-3" />
@@ -391,7 +465,8 @@ export default function HomePage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-500">
-                        Updated {new Date(project.updatedAt).toLocaleDateString()}
+                        Updated{" "}
+                        {new Date(project.updatedAt).toLocaleDateString()}
                       </div>
                       <Link href={`/docs/${project.slug}`}>
                         <Button variant="ghost" size="sm">
@@ -412,19 +487,27 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src="/images/ondo-logo.png" alt="ONDO Logo" className="h-6 brightness-0 invert" />
+              <img
+                src="/images/ondo-logo.png"
+                alt="ONDO Logo"
+                className="h-6 brightness-0 invert"
+              />
               <div>
                 <p className="font-semibold">ONDO Documentation Hub</p>
-                <p className="text-sm text-gray-400">© 2024 ONDO. All rights reserved.</p>
+                <p className="text-sm text-gray-400">
+                  © 2024 ONDO. All rights reserved.
+                </p>
               </div>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-400">Developed by Tumee</p>
-              <p className="text-sm text-gray-400">Powered by Next.js & Tailwind CSS</p>
+              <p className="text-sm text-gray-400">
+                Powered by Next.js & Tailwind CSS
+              </p>
             </div>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
