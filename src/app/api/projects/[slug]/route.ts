@@ -61,7 +61,7 @@ export async function PUT(
       name: name.trim(),
       content: content.trim(),
       description: description?.trim() || null,
-      category: category?.trim() || "general11", 
+      category: category?.trim() || "General11", 
     });
     
     return NextResponse.json({

@@ -1,101 +1,113 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  FileText, 
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
+  FileText,
   Calendar,
   Clock,
-  Loader2
-} from "lucide-react"
-import Link from "next/link"
-import { toast } from "sonner"
+  Loader2,
+} from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface Project {
-  id: string
-  name: string
-  slug: string
-  description: string | null
-  content: string
-  createdAt: string
-  updatedAt: string
-  wordCount: number
-  readTime: number
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  category: string;
+  wordCount: number;
+  readTime: number;
   sections: Array<{
-    id: string
-    title: string
-    level: number
-    anchor: string
-    order: number
-  }>
+    id: string;
+    title: string;
+    level: number;
+    anchor: string;
+    order: number;
+  }>;
 }
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProjects()
-  }, [])
+    fetchProjects();
+  }, []);
+
+  const visibleProjects = projects.filter((project) =>
+    selectedCategory === "All" ? true : project.category === selectedCategory
+  );
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("/api/projects")
-      const result = await response.json()
+      const response = await fetch("/api/projects");
+      const result = await response.json();
 
       if (result.success) {
-        setProjects(result.data)
+        setProjects(result.data);
       } else {
-        toast.error("Failed to fetch projects:", result.error)
+        toast.error("Failed to fetch projects:", result.error);
       }
     } catch (error) {
-      console.error("Error fetching projects:", error)
+      console.error("Error fetching projects:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (project: Project) => {
-    if (!confirm(`Are you sure you want to delete "${project.name}"? This action cannot be undone.`)) {
-      return
+    if (
+      !confirm(
+        `Are you sure you want to delete "${project.name}"? This action cannot be undone.`
+      )
+    ) {
+      return;
     }
 
-    setIsDeleting(project.id)
+    setIsDeleting(project.id);
 
     try {
       const response = await fetch(`/api/projects/${project.slug}`, {
         method: "DELETE",
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        setProjects(projects.filter(p => p.id !== project.id))
+        setProjects(projects.filter((p) => p.id !== project.id));
       } else {
-        toast.error("Failed to delete project:", result.error)
-        alert("Failed to delete project. Please try again.")
+        toast.error("Failed to delete project:", result.error);
+        alert("Failed to delete project. Please try again.");
       }
     } catch (error) {
-      console.error("Error deleting project:", error)
-      alert("Failed to delete project. Please try again.")
+      console.error("Error deleting project:", error);
+      alert("Failed to delete project. Please try again.");
     } finally {
-      setIsDeleting(null)
+      setIsDeleting(null);
     }
-  }
+  };
 
-  const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (project.description && project.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.description &&
+        project.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   if (isLoading) {
     return (
@@ -105,21 +117,32 @@ export default function ProjectsPage() {
           <p className="text-gray-600">Loading projects...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Manage your documentation projects
-              </p>
+            {/* Left section: Logo + Title */}
+            <div className="flex items-center space-x-4">
+              <Link href="/" className="flex items-center">
+                <img
+                  src="/images/ondo-logo.png"
+                  alt="ONDO Logo"
+                  className="h-10"
+                />
+              </Link>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+                <p className="mt-1 text-sm text-gray-500">
+                  Manage your documentation projects
+                </p>
+              </div>
             </div>
+
+            {/* Right section: New Project Button */}
             <Link href="/">
               <Button className="bg-pink-600 hover:bg-pink-700">
                 <Plus className="w-4 h-4 mr-2" />
@@ -142,6 +165,19 @@ export default function ProjectsPage() {
               className="pl-10"
             />
           </div>
+
+          {/* add category options here  */}
+          <div className="mb-4 mt-[10px]">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+            >
+              <option value="All">All</option>
+              <option value="general">General</option>
+              <option value="api">API</option>
+            </select>
+          </div>
         </div>
 
         {/* Projects Grid */}
@@ -151,7 +187,9 @@ export default function ProjectsPage() {
               {searchQuery ? (
                 <>
                   <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No projects found
+                  </h3>
                   <p className="text-gray-600 mb-6">
                     No projects match your search criteria.
                   </p>
@@ -162,7 +200,9 @@ export default function ProjectsPage() {
               ) : (
                 <>
                   <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No projects yet
+                  </h3>
                   <p className="text-gray-600 mb-6">
                     Get started by creating your first documentation project.
                   </p>
@@ -178,16 +218,24 @@ export default function ProjectsPage() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <Card key={project.id} className="hover:shadow-lg transition-shadow">
+            {visibleProjects.map((visibleProject) => (
+              <Card
+                key={visibleProject.id}
+                className="hover:shadow-lg transition-shadow"
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <CardTitle className="text-lg font-semibold text-gray-900 truncate">
-                        {project.name}
+                        {visibleProject.name}
                       </CardTitle>
+                      <span className="ml-2 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        {visibleProject.category}
+                      </span>
+
                       <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                        {project.description || "No description provided"}
+                        {visibleProject.description ||
+                          "No description provided"}
                       </p>
                     </div>
                   </div>
@@ -196,11 +244,15 @@ export default function ProjectsPage() {
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{project.wordCount}</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {visibleProject.wordCount}
+                      </div>
                       <div className="text-xs text-gray-600">Words</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{project.sections.length}</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {visibleProject.sections.length}
+                      </div>
                       <div className="text-xs text-gray-600">Sections</div>
                     </div>
                   </div>
@@ -209,23 +261,30 @@ export default function ProjectsPage() {
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                     <div className="flex items-center space-x-2">
                       <Clock className="w-3 h-3" />
-                      <span>{project.readTime} min read</span>
+                      <span>{visibleProject.readTime} min read</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-3 h-3" />
-                      <span>{new Date(project.updatedAt).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(
+                          visibleProject.updatedAt
+                        ).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
 
                   {/* Actions */}
                   <div className="flex items-center space-x-2">
-                    <Link href={`/docs/${project.slug}`} className="flex-1">
+                    <Link
+                      href={`/docs/${visibleProject.slug}`}
+                      className="flex-1"
+                    >
                       <Button variant="outline" size="sm" className="w-full">
                         <Eye className="w-4 h-4 mr-2" />
                         View
                       </Button>
                     </Link>
-                    <Link href={`/docs/${project.slug}/edit`}>
+                    <Link href={`/docs/${visibleProject.slug}/edit`}>
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -233,11 +292,11 @@ export default function ProjectsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(project)}
-                      disabled={isDeleting === project.id}
+                      onClick={() => handleDelete(visibleProject)}
+                      disabled={isDeleting === visibleProject.id}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
-                      {isDeleting === project.id ? (
+                      {isDeleting === visibleProject.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Trash2 className="w-4 h-4" />
@@ -258,5 +317,5 @@ export default function ProjectsPage() {
         )}
       </div>
     </div>
-  )
-} 
+  );
+}

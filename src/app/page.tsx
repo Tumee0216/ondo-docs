@@ -353,7 +353,7 @@ export default function HomePage() {
 
                   <div className="space-y-4">
                     <Label htmlFor="readme-content">
-                      Or Paste README Content
+                      Or Paste README Content Code
                     </Label>
                     <Textarea
                       id="readme-content"
@@ -429,6 +429,11 @@ export default function HomePage() {
                         <CardTitle className="text-lg truncate">
                           {project.name}
                         </CardTitle>
+                        {/* category  */}
+                        <p className="text-xs font-medium text-pink-600 uppercase tracking-wide mb-1">
+                          {project.category || "Uncategorized"}
+                        </p>
+
                         <CardDescription className="line-clamp-2">
                           {project.description || "No description provided"}
                         </CardDescription>
