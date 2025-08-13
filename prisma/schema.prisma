@@ -22,7 +22,7 @@ model Project {
   content     String   // README content
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  category    String  @default("general")
+  category    String  @default("General")
   
   // Extracted metadata
   sections    Section[]

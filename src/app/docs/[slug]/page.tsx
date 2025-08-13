@@ -18,7 +18,7 @@ import {
   Search,
   Share2,
   X,
-  Zap
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -33,6 +33,7 @@ interface Project {
   content: string;
   createdAt: string;
   updatedAt: string;
+  category: string;
   wordCount: number;
   readTime: number;
   sections: Array<{
@@ -216,7 +217,9 @@ export default function DocsPage() {
               <div className="mb-6">
                 <div className="flex items-center space-x-2 mb-2">
                   <BookOpen className="w-5 h-5 text-pink-600" />
-                  <h2 className="font-semibold text-gray-900">Documentation</h2>
+                  <h2 className="font-semibold text-gray-900">
+                    Documentations
+                  </h2>
                 </div>
                 <p className="text-sm text-gray-600">
                   Updated {new Date(project.updatedAt).toLocaleDateString()}
@@ -269,12 +272,20 @@ export default function DocsPage() {
                 <div className="flex space-x-2">
                   <Badge
                     variant="secondary"
+                    className="bg-green text-green-800 border-black"
+                  >
+                    <Zap className="w-3 h-3 mr-1" />
+                    {project.category}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
                     className="bg-green-100 text-green-800"
                   >
                     <Zap className="w-3 h-3 mr-1" />
                     Auto-generated
                   </Badge>
-                  <Badge 
+
+                  <Badge
                     variant="outline"
                     className="cursor-pointer hover:bg-gray-100"
                     onClick={() => setShowRawMarkdown(!showRawMarkdown)}
@@ -299,7 +310,9 @@ export default function DocsPage() {
               {showRawMarkdown ? (
                 <div className="bg-gray-50 border rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Raw Markdown</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Raw Markdown
+                    </h3>
                     <Button
                       variant="outline"
                       size="sm"

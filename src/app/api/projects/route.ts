@@ -5,6 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const { name, content, description, category } = await request.json()
 
+
     if (!name || !content) {
       return NextResponse.json({ error: "Name and content are required" }, { status: 400 })
     }

@@ -17,6 +17,7 @@ export interface ProjectWithSections {
   createdAt: Date
   updatedAt: Date
   wordCount: number
+  category: string | 'General'
   readTime: number
   sections: {
     id: string
@@ -95,6 +96,7 @@ export function calculateReadTime(content: string): number {
 
 export async function createProject(data: CreateProjectData) {
   const slug = generateSlug(data.name)
+  const category= data.category
   const sections = extractSections(data.content)
   const wordCount = data.content.split(/\s+/).length
   const readTime = calculateReadTime(data.content)
@@ -109,6 +111,8 @@ export async function createProject(data: CreateProjectData) {
     finalSlug = `${slug}-${Date.now()}`
   }
 
+  
+
   const project = await prisma.project.create({
     data: {
       name: data.name,
@@ -117,9 +121,11 @@ export async function createProject(data: CreateProjectData) {
       content: data.content,
       wordCount,
       readTime,
+      category:data.category,
       sections: {
         create: sections,
       },
+  
     },
     include: {
       sections: {
@@ -136,9 +142,12 @@ export async function getProject(slug: string): Promise<ProjectWithSections | nu
     where: { slug },
     include: {
       sections: {
+        
         orderBy: { order: "asc" },
       },
+      
     },
+    
   })
 
   return project
