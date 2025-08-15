@@ -31,6 +31,7 @@ interface Project {
   createdAt: string;
   updatedAt: string;
   category: string;
+  privateStatus: string;
   wordCount: number;
   readTime: number;
   sections: Array<{

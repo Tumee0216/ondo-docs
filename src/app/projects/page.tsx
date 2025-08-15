@@ -27,6 +27,7 @@ interface Project {
   createdAt: string;
   updatedAt: string;
   category: string;
+  privateStatus: string;
   wordCount: number;
   readTime: number;
   sections: Array<{
@@ -229,6 +230,15 @@ export default function ProjectsPage() {
                       <CardTitle className="text-lg font-semibold text-gray-900 truncate">
                         {visibleProject.name}
                       </CardTitle>
+                      <span
+                        className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${
+                          visibleProject.privateStatus === "private"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {visibleProject.privateStatus}
+                      </span>
                       <span className="ml-2 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                         {visibleProject.category}
                       </span>

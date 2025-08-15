@@ -3,7 +3,7 @@ import { createProject, getAllProjects } from "@/lib/db-utils"
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, content, description, category } = await request.json()
+    const { name, content, description, privateStatus, category} = await request.json()
 
 
     if (!name || !content) {
@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
       content,
       description,
       category,
+      privateStatus
       
     })
 

@@ -38,6 +38,7 @@ interface Project {
   createdAt: string;
   updatedAt: string;
   category: string;
+  privateStatus: string;
   wordCount: number;
   readTime: number;
   sections: Array<{
@@ -50,6 +51,9 @@ interface Project {
 }
 
 export default function HomePage() {
+  const [privateStatus, setPrivateStatus] = useState<"private" | "public">(
+    "public"
+  );
   const [category, setCategory] = useState("");
   const [readmeContent, setReadmeContent] = useState("");
   const [projectName, setProjectName] = useState("");
@@ -110,6 +114,7 @@ export default function HomePage() {
           content: readmeContent,
           description: projectDescription,
           category: category,
+          privateStatus: privateStatus,
         }),
       });
 
@@ -337,17 +342,36 @@ export default function HomePage() {
 
                     <div>
                       <Label htmlFor="category">Category</Label>
-                      <select
-                        id="category"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="w-full mt-2 p-2 border rounded-md"
-                      >
-                        <option value="">Select category</option>
-                        <option value="api">API</option>
-                        <option value="tool">Tool</option>
-                      </select>
+                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Category dropdown */}
+                        <select
+                          id="category"
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        >
+                          <option value="">General</option>
+                          <option value="api">API</option>
+                          <option value="tool">Tool</option>
+                        </select>
+
+                        {/* Privacy dropdown */}
+                        <Label htmlFor="privateStatus"> Privacy</Label>
+                        <select
+                          value={privateStatus}
+                          onChange={(e) =>
+                            setPrivateStatus(
+                              e.target.value as "private" | "public"
+                            )
+                          }
+                          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        >
+                          <option value="public">Public</option>
+                          <option value="private">Private</option>
+                        </select>
+                      </div>
                     </div>
+
                     {/* end  left side */}
                   </div>
 
@@ -431,7 +455,7 @@ export default function HomePage() {
                         </CardTitle>
                         {/* category  */}
                         <p className="text-xs font-medium text-pink-600 uppercase tracking-wide mb-1">
-                          {project.category || "Uncategorized"}
+                          {project.category}
                         </p>
 
                         <CardDescription className="line-clamp-2">

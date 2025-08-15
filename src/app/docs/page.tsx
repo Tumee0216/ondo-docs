@@ -26,6 +26,7 @@ interface ProjectData {
   content: string;
   generatedAt: string;
   category: string;
+  privateStatus: string;
 }
 
 interface Section {

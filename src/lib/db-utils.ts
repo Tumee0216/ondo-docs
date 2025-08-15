@@ -6,6 +6,7 @@ export interface CreateProjectData {
   content: string
   description?: string
   category:string 
+  privateStatus:string
 }
 
 export interface ProjectWithSections {
@@ -18,6 +19,7 @@ export interface ProjectWithSections {
   updatedAt: Date
   wordCount: number
   category: string | 'General'
+  privateStatus:string | "public"
   readTime: number
   sections: {
     id: string
@@ -97,6 +99,10 @@ export function calculateReadTime(content: string): number {
 export async function createProject(data: CreateProjectData) {
   const slug = generateSlug(data.name)
   const category= data.category
+  const privateStatus=
+  String(data.privateStatus ?? "public").toLowerCase() === "private"
+  ? "private"
+  : "public"
   const sections = extractSections(data.content)
   const wordCount = data.content.split(/\s+/).length
   const readTime = calculateReadTime(data.content)
@@ -122,6 +128,7 @@ export async function createProject(data: CreateProjectData) {
       wordCount,
       readTime,
       category:data.category,
+      privateStatus:data.privateStatus,
       sections: {
         create: sections,
       },

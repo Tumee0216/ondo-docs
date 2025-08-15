@@ -30,7 +30,7 @@ export async function PUT(
 ) {
   const { slug } = await params
   try {
-    const { name, content, description, category  } = await request.json()
+    const { name, content, description, category,privateStatus  } = await request.json()
 
     // Validate required fields
     if (!name || !content) {
@@ -61,7 +61,8 @@ export async function PUT(
       name: name.trim(),
       content: content.trim(),
       description: description?.trim() || null,
-      category: category?.trim() || "General11", 
+      category: category?.trim() || "General",
+      privateStatus:privateStatus || "public "
     });
     
     return NextResponse.json({

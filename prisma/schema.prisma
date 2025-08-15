@@ -15,20 +15,22 @@ datasource db {
 }
 
 model Project {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  content     String   // README content
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  category    String  @default("General")
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  content       String // README content
+  category      String   @default("General")
+  privateStatus String   @default("public")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   
+
   // Extracted metadata
-  sections    Section[]
-  wordCount   Int      @default(0)
-  readTime    Int      @default(0) // in minutes
-  
+  sections  Section[]
+  wordCount Int       @default(0)
+  readTime  Int       @default(0) // in minutes
+
   @@map("projects")
 }
 
@@ -36,10 +38,10 @@ model Section {
   id        String  @id @default(cuid())
   title     String
   level     Int
-  anchor    String  // URL anchor/slug
-  order     Int     // Order in document
+  anchor    String // URL anchor/slug
+  order     Int // Order in document
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
+
   @@map("sections")
 }
