@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface Project {
   id: string;
@@ -129,10 +130,12 @@ export default function ProjectsPage() {
             {/* Header */}
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center">
-                <img
+                <Image
                   src="/images/ondo-logo.png"
                   alt="ONDO Logo"
                   className="h-10"
+                  width={200}
+                  height={200}
                 />
               </Link>
               <div>

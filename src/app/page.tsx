@@ -182,6 +182,7 @@ export default function HomePage() {
                 <Zap className="w-3 h-3 mr-1" />
                 AI Powered
               </Badge>
+
               <Button variant="outline" size="sm">
                 <Gitlab className="w-4 h-4 mr-2" />
                 GitLab
